@@ -7,10 +7,10 @@ class Solution {
     ListNode? current = head;
 
     while (current != null) {
-      ListNode? nextTemp = current.next; // نحفظ التالي
-      current.next = prev; // نعكس الاتجاه
-      prev = current; // نحرك prev
-      current = nextTemp; // نكمل على الباقي
+      ListNode? nextTemp = current.next;
+      current.next = prev;
+      prev = current;
+      current = nextTemp;
     }
 
     return prev;
