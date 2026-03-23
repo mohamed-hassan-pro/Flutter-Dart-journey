@@ -10,8 +10,11 @@ class WelcomeBannerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(AppDimensions.paddingLarge),
-      
+      padding: const EdgeInsets.only(
+        left: AppDimensions.paddingSmall,
+        right: AppDimensions.paddingSmall,
+        top: AppDimensions.paddingSmall,
+      ),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppDimensions.borderRadius),
@@ -26,22 +29,21 @@ class WelcomeBannerWidget extends StatelessWidget {
         ),
         width: double.infinity,
         padding: EdgeInsets.all(AppDimensions.paddingMedium),
-        
+
         child: Column(
           crossAxisAlignment: .start,
           children: [
-            
             Text(AppStrings.welcomeGreeting, style: AppTextStyles.bannerTitle),
-            
+
             const SizedBox(height: AppDimensions.paddingSmall),
-            
+
             Text(
               AppStrings.welcomeSubtitle,
               style: AppTextStyles.bannerSubtitle,
             ),
 
             const SizedBox(height: AppDimensions.paddingMedium),
-            
+
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
