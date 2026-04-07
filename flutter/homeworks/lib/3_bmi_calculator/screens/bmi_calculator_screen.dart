@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:homeworks/3_bmi_calculator/models/bmimodel.dart';
+import 'package:homeworks/3_bmi_calculator/models/bmi_model.dart';
 import 'package:homeworks/3_bmi_calculator/widgets/calculate_bmi_button.dart';
 import 'package:homeworks/3_bmi_calculator/widgets/gender_section.dart';
 import 'package:homeworks/3_bmi_calculator/widgets/heigh_slider_card.dart';

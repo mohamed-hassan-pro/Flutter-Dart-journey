@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:homeworks/3_bmi_calculator/models/bmimodel.dart';
+import 'package:homeworks/3_bmi_calculator/models/bmi_model.dart';
 import 'package:homeworks/3_bmi_calculator/widgets/custom_widgets.dart';
 
 class WeightAgeSection extends StatelessWidget {
