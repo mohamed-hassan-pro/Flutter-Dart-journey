@@ -14,7 +14,8 @@ class CalculateBMIButton extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ResultScreen(bmiResult: bmiModel.calcBMI()),
+            builder: (context) =>
+                ResultScreen(bmiResult: bmiModel.calcBMI(), bmiModel: bmiModel),
           ),
         );
       },
