@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:homeworks/3_bmi_calculator/models/bmimodel.dart';
 import 'package:homeworks/3_bmi_calculator/widgets/calculate_bmi_button.dart';
 import 'package:homeworks/3_bmi_calculator/widgets/gender_section.dart';
 import 'package:homeworks/3_bmi_calculator/widgets/heigh_slider_card.dart';
 import 'package:homeworks/3_bmi_calculator/widgets/weight_age_section.dart';
 
 class BmiCalculatorScreen extends StatelessWidget {
-  const BmiCalculatorScreen({super.key});
-
+  BmiCalculatorScreen({super.key});
+  final BMIModel bmiModel = BMIModel(
+    age: 18,
+    gender: Gender.male,
+    height: 180,
+    weight: 70,
+  );
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,13 +29,13 @@ class BmiCalculatorScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                Expanded(child: GenderSection()),
+                Expanded(child: GenderSection(bmiModel: bmiModel)),
                 SizedBox(height: 32),
-                Expanded(child: HeightSliderCard()),
+                Expanded(child: HeightSliderCard(bmiModel: bmiModel)),
                 SizedBox(height: 32),
-                Expanded(child: WeightAgeSection()),
+                Expanded(child: WeightAgeSection(bmiModel: bmiModel)),
                 SizedBox(height: 32),
-                CalculateBMIButton(),
+                CalculateBMIButton(bmiModel: bmiModel),
               ],
             ),
           ),

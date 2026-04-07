@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:homeworks/3_bmi_calculator/models/bmimodel.dart'
+    show BMIModel;
 import 'package:homeworks/3_bmi_calculator/widgets/custom_widgets.dart';
 
 class HeightSliderCard extends StatefulWidget {
-  const HeightSliderCard({super.key});
+  const HeightSliderCard({super.key, required this.bmiModel});
+  final BMIModel bmiModel;
 
   @override
   State<HeightSliderCard> createState() => _HeightSliderCardState();
 }
 
 class _HeightSliderCardState extends State<HeightSliderCard> {
-  double _currentSliderValue = 170;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,7 @@ class _HeightSliderCardState extends State<HeightSliderCard> {
               textBaseline: TextBaseline.alphabetic,
               children: [
                 Text(
-                  _currentSliderValue.round().toString(),
+                  widget.bmiModel.height.round().toString(),
                   style: TextStyle(fontSize: 48, fontWeight: .w900),
                 ),
                 Text('cm', style: TextStyle(color: Color(0xff6e6f81))),
@@ -46,9 +48,9 @@ class _HeightSliderCardState extends State<HeightSliderCard> {
               child: Slider(
                 min: 20,
                 max: 270,
-                value: _currentSliderValue,
+                value: widget.bmiModel.height,
                 onChanged: (double value) => setState(() {
-                  _currentSliderValue = value;
+                  widget.bmiModel.height = value;
                 }),
               ),
             ),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:homeworks/3_bmi_calculator/Models/calculate_bmi.dart';
-import 'package:homeworks/3_bmi_calculator/result_screen.dart';
+import 'package:homeworks/3_bmi_calculator/models/bmimodel.dart';
+import 'package:homeworks/3_bmi_calculator/screens/result_screen.dart';
 
 class CalculateBMIButton extends StatelessWidget {
-  const CalculateBMIButton({super.key});
+  const CalculateBMIButton({super.key, required this.bmiModel});
+  final BMIModel bmiModel;
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +13,9 @@ class CalculateBMIButton extends StatelessWidget {
         // Calculator(height: height, weight: weight).calcBMI();
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ResultScreen(bmiResult: 5)),
+          MaterialPageRoute(
+            builder: (context) => ResultScreen(bmiResult: bmiModel.calcBMI()),
+          ),
         );
       },
       child: Container(

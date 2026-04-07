@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:homeworks/3_bmi_calculator/models/bmimodel.dart';
 import 'package:homeworks/3_bmi_calculator/widgets/custom_widgets.dart';
 
-enum Gender { male, female, none }
 
 class GenderSection extends StatefulWidget {
-  const GenderSection({super.key});
-
+  const GenderSection({super.key, required this.bmiModel});
+  final BMIModel bmiModel;
   @override
   State<GenderSection> createState() => _GenderSectionState();
 }
 
 class _GenderSectionState extends State<GenderSection> {
-  Gender _selectedGender = Gender.none;
   final Color _selectedColor = Color(0xff17172f);
   final Color _unSelectedColor = Color(0xff090b24);
 
@@ -21,26 +20,26 @@ class _GenderSectionState extends State<GenderSection> {
       children: [
         Expanded(
           child: GenderSelectionCard(
-            color: _selectedGender == Gender.male
+            color: widget.bmiModel.gender==Gender.male
                 ? _selectedColor
                 : _unSelectedColor,
             icon: Icons.male,
             data: 'MALE',
             onTap: () => setState(() {
-              _selectedGender = Gender.male;
+              widget.bmiModel.gender = Gender.male;
             }),
           ),
         ),
         SizedBox(width: 32),
         Expanded(
           child: GenderSelectionCard(
-            color: _selectedGender == Gender.female
+            color: widget.bmiModel.gender == Gender.female
                 ? _selectedColor
                 : _unSelectedColor,
             icon: Icons.female,
             data: 'FEMALE',
             onTap: () => setState(() {
-              _selectedGender = Gender.female;
+              widget.bmiModel.gender = Gender.female;
             }),
           ),
         ),

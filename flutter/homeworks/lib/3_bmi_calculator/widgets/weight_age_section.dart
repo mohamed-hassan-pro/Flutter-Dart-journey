@@ -1,31 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:homeworks/3_bmi_calculator/models/bmimodel.dart';
 import 'package:homeworks/3_bmi_calculator/widgets/custom_widgets.dart';
 
 class WeightAgeSection extends StatelessWidget {
-  const WeightAgeSection({super.key});
+  const WeightAgeSection({super.key, required this.bmiModel});
+  final BMIModel bmiModel;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        CounterCard(title: 'WEIGHT'),
+        CounterCard(title: 'WEIGHT', bmiModel: bmiModel),
         SizedBox(width: 32),
-        CounterCard(title: 'AGE'),
+        CounterCard(title: 'AGE', bmiModel: bmiModel),
       ],
     );
   }
 }
 
 class CounterCard extends StatefulWidget {
-  const CounterCard({super.key, required this.title});
+  const CounterCard({super.key, required this.title, required this.bmiModel});
   final String title;
+  final BMIModel bmiModel;
 
   @override
   State<CounterCard> createState() => _CounterCardState();
 }
 
 class _CounterCardState extends State<CounterCard> {
-  int curentWeight = 60;
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -45,7 +47,9 @@ class _CounterCardState extends State<CounterCard> {
                 style: const TextStyle(color: Color(0xff6e6f81), fontSize: 16),
               ),
               Text(
-                curentWeight.toString(),
+                widget.title == 'WEIGHT'
+                    ? widget.bmiModel.weight.toString()
+                    : widget.bmiModel.age.toString(),
                 style: const TextStyle(fontSize: 48, fontWeight: .w900),
               ),
               Row(
@@ -60,7 +64,9 @@ class _CounterCardState extends State<CounterCard> {
                     ),
                     onPressed: () {
                       setState(() {
-                        curentWeight--;
+                        widget.title == 'WEIGHT'
+                            ? widget.bmiModel.weight--
+                            : widget.bmiModel.age--;
                       });
                     },
                     icon: const Icon(Icons.remove),
@@ -76,7 +82,9 @@ class _CounterCardState extends State<CounterCard> {
                     alignment: .center,
                     onPressed: () {
                       setState(() {
-                        curentWeight++;
+                        widget.title == 'WEIGHT'
+                            ? widget.bmiModel.weight++
+                            : widget.bmiModel.age++;
                       });
                     },
                     icon: const Icon(Icons.add),
