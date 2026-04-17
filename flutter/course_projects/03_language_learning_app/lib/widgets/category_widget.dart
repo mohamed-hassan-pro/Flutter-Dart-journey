@@ -4,7 +4,7 @@ import 'package:language_learning_app/models/category_model.dart';
 
 class CategoryWidget extends StatelessWidget {
   const CategoryWidget({super.key, required this.category});
-  final Category category;
+  final CategoryModel category;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

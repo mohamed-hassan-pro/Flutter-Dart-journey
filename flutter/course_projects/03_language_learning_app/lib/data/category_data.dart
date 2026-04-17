@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:language_learning_app/data/numbers_data.dart';
-import 'package:language_learning_app/models/category_model.dart' as model;
+import 'package:language_learning_app/data/items_data.dart';
+import 'package:language_learning_app/models/category_model.dart';
 import 'package:language_learning_app/views/items_view.dart';
 
 class CategoryData {
-  static List<model.Category> categories(BuildContext context) {
+  static List<CategoryModel> categories(BuildContext context) {
     return [
-      model.Category(
+      CategoryModel(
         txt: 'Numbers',
         bgColor: Colors.orange,
         items: Data.numbers,
@@ -14,17 +14,16 @@ class CategoryData {
           context,
           MaterialPageRoute(
             builder: (context) => ItemsView(
-              category: model.Category(
+              category: CategoryModel(
                 txt: 'Numbers',
                 bgColor: Colors.orange,
                 items: Data.numbers,
-                onTap: () {},
               ),
             ),
           ),
         ),
       ),
-      model.Category(
+      CategoryModel(
         txt: 'Family Members',
         bgColor: Colors.green,
         items: Data.familyMembers,
@@ -32,17 +31,16 @@ class CategoryData {
           context,
           MaterialPageRoute(
             builder: (context) => ItemsView(
-              category: model.Category(
+              category: CategoryModel(
                 txt: 'Family Members',
                 bgColor: Colors.green,
                 items: Data.familyMembers,
-                onTap: () {},
               ),
             ),
           ),
         ),
       ),
-      model.Category(
+      CategoryModel(
         txt: 'Colors',
         bgColor: Colors.purple,
         items: Data.colors,
@@ -50,17 +48,16 @@ class CategoryData {
           context,
           MaterialPageRoute(
             builder: (context) => ItemsView(
-              category: model.Category(
+              category: CategoryModel(
                 txt: 'Colors',
                 bgColor: Colors.purple,
                 items: Data.colors,
-                onTap: () {},
               ),
             ),
           ),
         ),
       ),
-      model.Category(
+      CategoryModel(
         txt: 'Phrases',
         bgColor: Colors.blue,
         items: Data.phrases,
@@ -68,11 +65,10 @@ class CategoryData {
           context,
           MaterialPageRoute(
             builder: (context) => ItemsView(
-              category: model.Category(
+              category: CategoryModel(
                 txt: 'Phrases',
                 bgColor: Colors.blue,
                 items: Data.phrases,
-                onTap: () {},
               ),
             ),
           ),

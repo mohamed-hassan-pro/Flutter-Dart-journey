@@ -1,5 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import '../constants.dart';
 import '../models/item_model.dart';
 
 class ItemWidget extends StatelessWidget {
@@ -19,8 +20,8 @@ class ItemWidget extends StatelessWidget {
         Expanded(
           child: ListTile(
             tileColor: color,
-            title: Text(item.jpName, style: const TextStyle(color: Colors.white)),
-            subtitle: Text(item.enName, style: const TextStyle(color: Colors.white)),
+            title: Text(item.jpName, style: kWhite18TextStyle),
+            subtitle: Text(item.enName, style: kWhite18TextStyle),
             trailing: IconButton(
               onPressed: () {},
               icon: IconButton(

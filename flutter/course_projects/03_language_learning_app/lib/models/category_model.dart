@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:language_learning_app/models/item_model.dart';
 
-class Category {
+class CategoryModel {
   final String txt;
   final Color bgColor;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final List<ItemModel> items;
-  const Category({
+  const CategoryModel({
     required this.txt,
     required this.bgColor,
-    required this.onTap,
+    this.onTap,
     required this.items,
   });
 }

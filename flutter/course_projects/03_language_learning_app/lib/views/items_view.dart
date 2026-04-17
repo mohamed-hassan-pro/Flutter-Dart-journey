@@ -5,7 +5,7 @@ import '../widgets/item_widget.dart';
 
 class ItemsView extends StatelessWidget {
   const ItemsView({super.key, required this.category});
-  final Category category;
+  final CategoryModel category;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,10 +15,8 @@ class ItemsView extends StatelessWidget {
       ),
       body: ListView.builder(
         itemCount: category.items.length,
-        itemBuilder: (context, index) => ItemWidget(
-          color: category.bgColor,
-          item: category.items[index],
-        ),
+        itemBuilder: (context, index) =>
+            ItemWidget(color: category.bgColor, item: category.items[index]),
       ),
     );
   }
