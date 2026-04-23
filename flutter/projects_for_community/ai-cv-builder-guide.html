@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI CV Builder - دليلك لإنشاء CV احترافي بالذكاء الاصطناعي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'cairo': ['Cairo', 'sans-serif'],
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        },
+                        accent: {
+                            400: '#f472b6',
+                            500: '#ec4899',
+                            600: '#db2777',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        [dir="ltr"] body { font-family: 'Inter', sans-serif; }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .dark .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .prompt-box {
+            position: relative;
+            overflow: hidden;
+        }
+        .prompt-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #ec4899, #8b5cf6);
+        }
+        .step-number {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+        .copy-btn {
+            transition: all 0.3s ease;
+        }
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+        }
+        .tool-card {
+            transition: all 0.3s ease;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2);
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        .roadmap-line {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, #3b82f6, #ec4899);
+        }
+        @media (max-width: 768px) {
+            .roadmap-line { left: 20px; }
+        }
+        .notion-table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .notion-table th, .notion-table td {
+            border: 1px solid #e5e7eb;
+            padding: 12px;
+            text-align: right;
+        }
+        .dark .notion-table th, .dark .notion-table td {
+            border-color: #374151;
+        }
+        .notion-table th {
+            background: #f9fafb;
+            font-weight: 600;
+        }
+        .dark .notion-table th {
+            background: #1f2937;
+        }
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #ec4899);
+            z-index: 50;
+            transition: width 0.1s;
+        }
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300">
+    <div class="scroll-indicator" id="scrollIndicator"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-40 glass-card border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl">
+                        CV
+                    </div>
+                    <span class="font-bold text-xl hidden sm:block" data-ar="بناء السيرة الذاتية بالذكاء الاصطناعي" data-en="AI CV Builder">بناء السيرة الذاتية بالذكاء الاصطناعي</span>
+                </div>
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <button onclick="toggleLanguage()" class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-medium text-sm">
+                        <i class="fas fa-globe ml-2"></i>
+                        <span id="langBtn">English</span>
+                    </button>
+                    <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block text-yellow-400"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-4 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 opacity-50"></div>
+        <div class="absolute top-20 right-10 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+        <div class="absolute top-40 left-10 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style="animation-delay: 2s"></div>
+
+        <div class="max-w-6xl mx-auto text-center relative z-10">
+            <div class="inline-block px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-semibold mb-6">
+                <i class="fas fa-sparkles mr-2"></i>
+                <span data-ar="مجاني 100% | مفتوح المصدر | بدون خبرة مسبقة" data-en="100% Free | Open Source | No Experience Needed">مجاني 100% | مفتوح المصدر | بدون خبرة مسبقة</span>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
+                <span data-ar="أنشئ سيرتك الذاتية" data-en="Build Your Resume">أنشئ سيرتك الذاتية</span>
+                <br>
+                <span class="gradient-text" data-ar="باحترافية بالذكاء الاصطناعي" data-en="Professionally with AI">باحترافية بالذكاء الاصطناعي</span>
+            </h1>
+            <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed" data-ar="دليلك الشامل لإنشاء CV احترافي يمر من خلال أنظمة ATS ويخطف نظر الم recruiters في 6 ثوانٍ فقط. خطوة بخطوة، من الصفر حتى الوظيفة." data-en="Your comprehensive guide to creating a professional CV that passes ATS systems and grabs recruiters' attention in just 6 seconds. Step by step, from zero to hired.">
+                دليلك الشامل لإنشاء CV احترافي يمر من خلال أنظمة ATS ويخطف نظر الم recruiters في 6 ثوانٍ فقط. خطوة بخطوة، من الصفر حتى الوظيفة.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#steps" class="px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg hover:shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-1">
+                    <i class="fas fa-rocket ml-2"></i>
+                    <span data-ar="ابدأ الآن" data-en="Start Now">ابدأ الآن</span>
+                </a>
+                <a href="#converter" class="px-8 py-4 rounded-xl bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 font-bold text-lg hover:border-blue-500 dark:hover:border-blue-400 transition-all">
+                    <i class="fas fa-file-word ml-2 text-blue-500"></i>
+                    <span data-ar="محول MD إلى DOCX" data-en="MD to DOCX Converter">محول MD إلى DOCX</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section class="py-20 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="tool-card bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
+                    <div class="feature-icon mb-6">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3" data-ar="برومبتات جاهزة" data-en="Ready-made Prompts">برومبتات جاهزة</h3>
+                    <p class="text-gray-600 dark:text-gray-400" data-ar="انسخ والصق برومبتات محسنة للحصول على أفضل نتيجة من أي AI Agent تستخدمه" data-en="Copy and paste optimized prompts to get the best results from any AI Agent you use">انسخ والصق برومبتات محسنة للحصول على أفضل نتيجة من أي AI Agent تستخدمه</p>
+                </div>
+                <div class="tool-card bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
+                    <div class="feature-icon mb-6" style="background: linear-gradient(135deg, #ec4899, #f43f5e);">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3" data-ar="متوافق مع ATS" data-en="ATS Compatible">متوافق مع ATS</h3>
+                    <p class="text-gray-600 dark:text-gray-400" data-ar="تصميم وتنسيق يضمن مرور سيرتك من أنظمة الفرز الآلي بنسبة 100%" data-en="Design and formatting that ensures your resume passes automated screening systems 100%">تصميم وتنسيق يضمن مرور سيرتك من أنظمة الفرز الآلي بنسبة 100%</p>
+                </div>
+                <div class="tool-card bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
+                    <div class="feature-icon mb-6" style="background: linear-gradient(135deg, #10b981, #059669);">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3" data-ar="سريع ومجاني" data-en="Fast & Free">سريع ومجاني</h3>
+                    <p class="text-gray-600 dark:text-gray-400" data-ar="أنشئ سيرتك في أقل من 30 دقيقة بدون أي تكلفة أو اشتراكات مخفية" data-en="Create your resume in under 30 minutes with no cost or hidden subscriptions">أنشئ سيرتك في أقل من 30 دقيقة بدون أي تكلفة أو اشتراكات مخفية</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Step-by-Step Guide -->
+    <section id="steps" class="py-20 px-4 bg-white dark:bg-gray-800/50">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4" data-ar="خطوات الإنشاء" data-en="Creation Steps">خطوات الإنشاء</h2>
+                <p class="text-gray-600 dark:text-gray-400 text-lg" data-ar="اتبع هذه الخطوات بالترتيب للحصول على أفضل نتيجة" data-en="Follow these steps in order for the best results">اتبع هذه الخطوات بالترتيب للحصول على أفضل نتيجة</p>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="relative mb-16">
+                <div class="flex flex-col md:flex-row items-start gap-8">
+                    <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                        1
+                    </div>
+                    <div class="flex-1 bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
+                        <h3 class="text-2xl font-bold mb-4" data-ar="إعداد ملف المعرفة (repo-info.md)" data-en="Prepare Knowledge File (repo-info.md)">إعداد ملف المعرفة (repo-info.md)</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6" data-ar="أنشئ ملفاً نصياً باسم repo-info.md واجمع فيه كل خبراتك ومهاراتك ومشاريعك بأي ترتيب. هذا الملف هو قاعدة بياناتك الشخصية التي سيبني عليها الذكاء الاصطناعي سيرتك." data-en="Create a text file named repo-info.md and gather all your experiences, skills, and projects in any order. This file is your personal database that AI will build your resume upon.">
+                            أنشئ ملفاً نصياً باسم repo-info.md واجمع فيه كل خبراتك ومهاراتك ومشاريعك بأي ترتيب. هذا الملف هو قاعدة بياناتك الشخصية.
+                        </p>
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 border-l-4 border-blue-500">
+                            <h4 class="font-bold mb-3 text-blue-600 dark:text-blue-400">
+                                <i class="fas fa-lightbulb mr-2"></i>
+                                <span data-ar="ماذا تضع في الملف؟" data-en="What to include?">ماذا تضع في الملف؟</span>
+                            </h4>
+                            <ul class="space-y-2 text-gray-700 dark:text-gray-300">
+                                <li><i class="fas fa-check text-green-500 mr-2"></i><span data-ar="الخبرات العملية (تدريبات، عمل حر، مشاريع أكاديمية)" data-en="Work experience (internships, freelance, academic projects)">الخبرات العملية (تدريبات، عمل حر، مشاريع أكاديمية)</span></li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i><span data-ar="المهارات التقنية مع مستوى الإتقان" data-en="Technical skills with proficiency levels">المهارات التقنية مع مستوى الإتقان</span></li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i><span data-ar="المشاريع مع الروابط والنتائج" data-en="Projects with links and results">المشاريع مع الروابط والنتائج</span></li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i><span data-ar="الشهادات والمسابقات والإنجازات" data-en="Certificates, competitions, and achievements">الشهادات والمسابقات والإنجازات</span></li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i><span data-ar="التعليم والدورات التدريبية" data-en="Education and training courses">التعليم والدورات التدريبية</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="relative mb-16">
+                <div class="flex flex-col md:flex-row items-start gap-8">
+                    <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                        2
+                    </div>
+                    <div class="flex-1 bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
+                        <h3 class="text-2xl font-bold mb-4" data-ar="إضافة قواعد السيرة الذاتية (cv-rules.md)" data-en="Add CV Rules (cv-rules.md)">إضافة قواعد السيرة الذاتية (cv-rules.md)</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6" data-ar="انسخ القواعد التالية والصقها في ملف cv-rules.md. هذه القواعد هي المعايير الذهبية التي يتبعها Google وكبرى الشركات." data-en="Copy the following rules and paste them into a file named cv-rules.md. These are the golden standards followed by Google and major companies.">
+                            انسخ القواعد التالية والصقها في ملف cv-rules.md. هذه القواعد هي المعايير الذهبية.
+                        </p>
+
+                        <div class="prompt-box bg-gray-900 rounded-xl p-6 text-gray-100 font-mono text-sm overflow-x-auto">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-gray-400 text-xs">cv-rules.md</span>
+                                <button onclick="copyToClipboard('cvRules')" class="copy-btn px-3 py-1 rounded bg-gray-700 hover:bg-gray-600 text-xs">
+                                    <i class="fas fa-copy mr-1"></i> <span class="copy-text">نسخ</span>
+                                </button>
+                            </div>
+                            <pre id="cvRules" class="whitespace-pre-wrap text-green-400"># Professional Resume Writing Rules
+
+## 1. THE 6-SECOND RULE
+Recruiters spend 6-9 seconds on initial scan.
+- Most important info in top third
+- Bullets scannable (first 3-4 words only)
+- Keyword/metric FIRST in each bullet
+- Max 1 page for interns/fresh graduates
+- Generous white space
+
+## 2. SECTION ORDER (Student/Intern)
+1. Header (Name + Contact)
+2. Professional Summary (2-3 sentences MAX)
+3. Education (students put HIGH)
+4. Experience (reverse chronological)
+5. Projects (only if relevant)
+6. Technical Skills (hard skills ONLY - categorized)
+7. Additional (awards/competitions - if space)
+
+## 3. X-Y-Z BULLET FORMULA (Google Standard)
+"Accomplished [X] as measured by [Y], by doing [Z]."
+- X = Accomplishment
+- Y = Measurable impact (number, %, time saved)
+- Z = Technical method
+Target: 1 line per bullet, max 2 lines. Under 20 words ideal.
+
+## 4. WORDS TO NEVER USE
+Empty claims: Hard worker, Dedicated, Passionate, Detail-oriented, Self-starter, Fast learner, Results-driven, Team player
+Weak verbs: Responsible for → Designed, Assisted → Collaborated, Handled → Managed, Worked on → Developed
+Filler: "Proven track record", "Strong communication", "References available", "Successfully", "Various", "Etc."
+
+## 5. STRONG ACTION VERBS
+Technical: Architected, Engineered, Designed, Developed, Built, Implemented, Automated, Deployed, Optimized
+Problem-solving: Resolved, Debugged, Streamlined, Eliminated
+Leadership: Led, Spearheaded, Directed, Mentored, Pioneered
+Analysis: Analyzed, Validated, Evaluated
+Rule: Never repeat same verb twice.
+
+## 6. TAILORING RULES
+- Extract exact phrases from JD (ATS is literal)
+- Use same phrasing as JD
+- Place keywords in: Summary, Skills, first 3 words of bullets
+- Never emphasize skill you can't defend in 30-min interview
+
+## 7. SOFT SKILLS RULE
+NEVER list soft skills standalone. PROVE through bullets.
+Example: "Led 3-person team to deliver app in 2-hour sprint, winning 3rd place"
+
+## 8. FORMATTING
+- Single-column layout (ATS compatible)
+- Standard headings: "Experience", "Education", "Skills"
+- Font: Arial, Calibri, Roboto - 10-12pt body, 14-16pt headers
+- Margins: 0.5 to 1 inch
+- File: .docx or clean text-based PDF
+- Bullets: 1-2 lines max, under 20 words, no periods
+- 2-4 bullets per role
+- Current role: Present tense, Past roles: Past tense
+- Always digits not words: "3 services" not "three"
+- Number first: "70% reduction" not "reduced by 70%"
+
+## 9. NEVER INCLUDE
+Photo, Age/Gender/Marital/Religion, "References available", Salary, "I/my/me", Objective statements, Unverifiable skills, Irrelevant history, Spelling errors
+
+## 10. PRE-SUBMIT CHECKLIST
+- Starts with strong unique action verb?
+- Contains metric/measurable result?
+- 1-2 lines max (under 20 words)?
+- Keyword in first 3-4 words?
+- Follows X-Y-Z formula?
+- No weak verbs or empty claims?
+- One page only? Single column?
+- No repeated verbs?
+- Soft skills shown, not listed?</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="relative mb-16">
+                <div class="flex flex-col md:flex-row items-start gap-8">
+                    <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500 to-red-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                        3
+                    </div>
+                    <div class="flex-1 bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
+                        <h3 class="text-2xl font-bold mb-4" data-ar="إعداد وصف الوظيفة (job-description.md)" data-en="Prepare Job Description (job-description.md)">إعداد وصف الوظيفة (job-description.md)</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6" data-ar="أنشئ ملفاً يحتوي على وصف الوظيفة أو التدريب الذي تتقدم له. انسخ والصق إعلان الوظيفة كاملاً في هذا الملف." data-en="Create a file containing the job or internship description you're applying for. Copy and paste the full job posting into this file.">
+                            أنشئ ملفاً يحتوي على وصف الوظيفة أو التدريب. انسخ إعلان الوظيفة كاملاً.
+                        </p>
+                        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-6">
+                            <h4 class="font-bold text-yellow-800 dark:text-yellow-400 mb-3">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                <span data-ar="لماذا هذا المهم؟" data-en="Why is this important?">لماذا هذا المهم؟</span>
+                            </h4>
+                            <p class="text-gray-700 dark:text-gray-300" data-ar="الذكاء الاصطناعي سيقارن بين مهاراتك ومتطلبات الوظيفة، ويخصص سيرتك لتتناسب تماماً مع ما يبحث عنه صاحب العمل. هذا يزيد فرصتك في اجتياز ATS بنسبة 300%." data-en="AI will compare your skills with job requirements and customize your resume to match exactly what the employer seeks. This increases your ATS pass rate by 300%.">
+                                الذكاء الاصطناعي سيخصص سيرتك لتتناسب تماماً مع متطلبات الوظيفة، مما يزيد فرصتك 300%.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="relative mb-16">
+                <div class="flex flex-col md:flex-row items-start gap-8">
+                    <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                        4
+                    </div>
+                    <div class="flex-1 bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
+                        <h3 class="text-2xl font-bold mb-4" data-ar="تشغيل البرومبتات في الـ AI Agent" data-en="Run Prompts in AI Agent">تشغيل البرومبتات في الـ AI Agent</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6" data-ar="استخدم إحدى المنصات التالية: AntiGravity، ChatGPT، Claude، أو أي AI Agent تفضله. اتبع البرومبتات بالترتيب." data-en="Use one of these platforms: AntiGravity, ChatGPT, Claude, or any AI Agent you prefer. Follow the prompts in order.">
+                            استخدم AntiGravity، ChatGPT، Claude، أو أي AI Agent. اتبع البرومبتات التالية:
+                        </p>
+
+                        <div class="space-y-6">
+                            <!-- Prompt 1 -->
+                            <div class="prompt-box bg-gray-900 rounded-xl p-6 text-gray-100">
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="text-blue-400 font-bold"><i class="fas fa-terminal mr-2"></i>Prompt 1: إنشاء البروفايلات</span>
+                                    <button onclick="copyToClipboard('prompt1')" class="copy-btn px-3 py-1 rounded bg-gray-700 hover:bg-gray-600 text-xs">
+                                        <i class="fas fa-copy mr-1"></i> <span class="copy-text">نسخ</span>
+                                    </button>
+                                </div>
+                                <pre id="prompt1" class="whitespace-pre-wrap text-sm text-green-300">You are an expert in writing personal profiles.
+
+From this file repo-info.md, create separate profiles of your experience, categorized by type: work experience, projects, awards and competitions, skills, and by specialization (such as: Data Engineer, Flutter Developer, Systems Engineer, or any specializations relevant based on the information in this file).
+
+Create the file: repo-info.md</pre>
+                            </div>
+
+                            <!-- Prompt 2 -->
+                            <div class="prompt-box bg-gray-900 rounded-xl p-6 text-gray-100">
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="text-purple-400 font-bold"><i class="fas fa-terminal mr-2"></i>Prompt 2: التحقق من النتيجة</span>
+                                    <button onclick="copyToClipboard('prompt2')" class="copy-btn px-3 py-1 rounded bg-gray-700 hover:bg-gray-600 text-xs">
+                                        <i class="fas fa-copy mr-1"></i> <span class="copy-text">نسخ</span>
+                                    </button>
+                                </div>
+                                <pre id="prompt2" class="whitespace-pre-wrap text-sm text-green-300">Review the generated profiles carefully. If anything is missing (such as skills portfolio, specific projects, or experiences), send a follow-up prompt like:
+
+"I didn't create a skills portfolio."
+
+Or specify exactly what needs to be added or corrected.</pre>
+                            </div>
+
+                            <!-- Prompt 3 -->
+                            <div class="prompt-box bg-gray-900 rounded-xl p-6 text-gray-100">
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="text-pink-400 font-bold"><i class="fas fa-terminal mr-2"></i>Prompt 3: توليد السيرة الذاتية</span>
+                                    <button onclick="copyToClipboard('prompt3')" class="copy-btn px-3 py-1 rounded bg-gray-700 hover:bg-gray-600 text-xs">
+                                        <i class="fas fa-copy mr-1"></i> <span class="copy-text">نسخ</span>
+                                    </button>
+                                </div>
+                                <pre id="prompt3" class="whitespace-pre-wrap text-sm text-green-300">These @cv-rules.md were applied to these files.
+D:\Diploma\Dart\homeworklutter\CV\my-experience
+
+Generate a CV output for this intern/job-description.md
+
+Apply all formatting rules, X-Y-Z bullet formula, strong action verbs, and ATS optimization from cv-rules.md.</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="relative mb-16">
+                <div class="flex flex-col md:flex-row items-start gap-8">
+                    <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-yellow-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                        5
+                    </div>
+                    <div class="flex-1 bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
+                        <h3 class="text-2xl font-bold mb-4" data-ar="التحويل والتنسيق النهائي" data-en="Conversion & Final Formatting">التحويل والتنسيق النهائي</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6" data-ar="بعد توليد السيرة بصيغة Markdown (.md)، استخدم المحول أدناه لتحويلها إلى DOCX. ثم ارفعها على أحد المواقع للتنسيق النهائي." data-en="After generating the resume in Markdown (.md), use the converter below to convert it to DOCX. Then upload it to one of these sites for final formatting.">
+                            حول الملف من MD إلى DOCX باستخدام الأداة أدناه، ثم ارفعه للتنسيق.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <a href="https://flowcv.com" target="_blank" class="flex items-center p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+                                <div class="w-12 h-12 rounded-lg bg-blue-500 flex items-center justify-center text-white mr-4">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-blue-900 dark:text-blue-300">FlowCV</div>
+                                    <div class="text-sm text-blue-700 dark:text-blue-400">flowcv.com</div>
+                                </div>
+                            </a>
+                            <a href="https://huntr.co" target="_blank" class="flex items-center p-4 rounded-xl bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors">
+                                <div class="w-12 h-12 rounded-lg bg-purple-500 flex items-center justify-center text-white mr-4">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-purple-900 dark:text-purple-300">Huntr.co</div>
+                                    <div class="text-sm text-purple-700 dark:text-purple-400">huntr.co</div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6">
+                            <h4 class="font-bold text-red-800 dark:text-red-400 mb-3">
+                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                <span data-ar="تنبيه مهم" data-en="Important Warning">تنبيه مهم</span>
+                            </h4>
+                            <p class="text-gray-700 dark:text-gray-300 font-medium" data-ar="راجع كل نتيجة بعد كل خطوة. الدقة مهمة، والصدق احترام لنفسك. غيرك سيحترمك." data-en="Review every result after each step. Accuracy is important, and honesty is self-respect. Others will respect you.">
+                                راجع كل نتيجة بعد كل خطوة. الدقة مهمة، والصدق احترام لنفسك.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MD to DOCX Converter Tool -->
+    <section id="converter" class="py-20 px-4 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-4" data-ar="محول Markdown إلى Word" data-en="Markdown to Word Converter">محول Markdown إلى Word</h2>
+                <p class="text-gray-600 dark:text-gray-400 text-lg" data-ar="ارفع ملف MD الخاص بك وتحويله إلى DOCX مباشرة في المتصفح" data-en="Upload your MD file and convert it to DOCX directly in the browser">ارفع ملف MD الخاص بك وتحويله إلى DOCX مباشرة</p>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8">
+                <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-12 text-center hover:border-blue-500 dark:hover:border-blue-400 transition-colors cursor-pointer" onclick="document.getElementById('mdFile').click()" id="dropZone">
+                    <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4"></i>
+                    <p class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2" data-ar="اضغط أو اسحب ملف Markdown هنا" data-en="Click or drag Markdown file here">اضغط أو اسحب ملف Markdown هنا</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">.md</p>
+                    <input type="file" id="mdFile" accept=".md,.markdown,.txt" class="hidden" onchange="handleFileSelect(event)">
+                </div>
+
+                <div id="previewSection" class="hidden mt-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-lg" data-ar="معاينة المحتوى" data-en="Content Preview">معاينة المحتوى</h3>
+                        <button onclick="convertToDocx()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold hover:shadow-lg transition-all">
+                            <i class="fas fa-file-word mr-2"></i>
+                            <span data-ar="تحميل كـ DOCX" data-en="Download as DOCX">تحميل كـ DOCX</span>
+                        </button>
+                    </div>
+                    <div id="previewContent" class="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 max-h-96 overflow-y-auto text-sm border border-gray-200 dark:border-gray-700"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Future Vision / SaaS Roadmap -->
+    <section id="roadmap" class="py-20 px-4 bg-white dark:bg-gray-800/50">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4" data-ar="رؤية المستقبل" data-en="Future Vision">رؤية المستقبل</h2>
+                <p class="text-gray-600 dark:text-gray-400 text-lg max-w-3xl mx-auto" data-ar="نطمح لتحويل هذا الدليل إلى منصة SaaS متكاملة تخدم المجتمع العربي والعالمي" data-en="We aspire to turn this guide into a comprehensive SaaS platform serving the Arab and global community">
+                    نطمح لتحويل هذا الدليل إلى منصة SaaS متكاملة
+                </p>
+            </div>
+
+            <div class="relative">
+                <div class="roadmap-line hidden md:block"></div>
+
+                <!-- Phase 1 -->
+                <div class="flex flex-col md:flex-row items-center mb-16 relative">
+                    <div class="md:w-1/2 md:pr-12 md:text-left text-right order-2 md:order-1">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
+                            <div class="inline-block px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-bold mb-4">MVP</div>
+                            <h3 class="text-2xl font-bold mb-3" data-ar="المرحلة الأولى: منشئ السير الذاتية" data-en="Phase 1: CV Builder">المرحلة الأولى: منشئ السير الذاتية</h3>
+                            <ul class="space-y-2 text-gray-600 dark:text-gray-400">
+                                <li><i class="fas fa-check-circle text-blue-500 mr-2"></i><span data-ar="قاعدة بيانات للمستخدمين تخزن خبراتهم ومهاراتهم" data-en="User database storing experiences and skills">قاعدة بيانات للمستخدمين</span></li>
+                                <li><i class="fas fa-check-circle text-blue-500 mr-2"></i><span data-ar="توليد CV تلقائي بالذكاء الاصطناعي" data-en="AI-powered automatic CV generation">توليد CV تلقائي بالذكاء الاصطناعي</span></li>
+                                <li><i class="fas fa-check-circle text-blue-500 mr-2"></i><span data-ar="قالب قياسي واحد احترافي (متوافق مع ATS)" data-en="One professional standard template (ATS compatible)">قالب قياسي واحد احترافي</span></li>
+                                <li><i class="fas fa-check-circle text-blue-500 mr-2"></i><span data-ar="مجاني لمرتين، ثم اشتراك رمزي" data-en="Free for 2 uses, then nominal subscription">مجاني لمرتين، ثم اشتراك رمزي</span></li>
+                                <li><i class="fas fa-check-circle text-blue-500 mr-2"></i><span data-ar="حل مشكلة الطلاب وحديثي التخرج" data-en="Solving students and fresh graduates problems">حل مشكلة الطلاب وحديثي التخرج</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="md:w-12 flex justify-center order-1 md:order-2 mb-4 md:mb-0 z-10">
+                        <div class="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold shadow-lg border-4 border-white dark:border-gray-800">1</div>
+                    </div>
+                    <div class="md:w-1/2 md:pl-12 order-3 hidden md:block"></div>
+                </div>
+
+                <!-- Phase 2 -->
+                <div class="flex flex-col md:flex-row items-center mb-16 relative">
+                    <div class="md:w-1/2 md:pr-12 order-2 hidden md:block"></div>
+                    <div class="md:w-12 flex justify-center order-1 md:order-2 mb-4 md:mb-0 z-10">
+                        <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold shadow-lg border-4 border-white dark:border-gray-800">2</div>
+                    </div>
+                    <div class="md:w-1/2 md:pl-12 text-right order-3 md:order-3">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
+                            <div class="inline-block px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-sm font-bold mb-4">Portfolio</div>
+                            <h3 class="text-2xl font-bold mb-3" data-ar="المرحلة الثانية: منشئ البورتفوليو" data-en="Phase 2: Portfolio Builder">المرحلة الثانية: منشئ البورتفوليو</h3>
+                            <ul class="space-y-2 text-gray-600 dark:text-gray-400">
+                                <li><i class="fas fa-check-circle text-purple-500 mr-2"></i><span data-ar="بورتفوليو حسب التخصص (Flutter, Data, Backend, etc.)" data-en="Portfolio by specialization">بورتفوليو حسب التخصص</span></li>
+                                <li><i class="fas fa-check-circle text-purple-500 mr-2"></i><span data-ar="قوالب جاهزة لكل مجال مراجعة من خبراء" data-en="Ready templates for each field reviewed by experts">قوالب جاهزة مراجعة من خبراء</span></li>
+                                <li><i class="fas fa-check-circle text-purple-500 mr-2"></i><span data-ar="ربط تلقائي مع GitHub و LinkedIn" data-en="Auto-sync with GitHub and LinkedIn">ربط تلقائي مع GitHub و LinkedIn</span></li>
+                                <li><i class="fas fa-check-circle text-purple-500 mr-2"></i><span data-ar="تخصيص ذكي حسب نوع الوظيفة" data-en="Smart customization by job type">تخصيص ذكي حسب نوع الوظيفة</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 3 -->
+                <div class="flex flex-col md:flex-row items-center relative">
+                    <div class="md:w-1/2 md:pr-12 md:text-left text-right order-2 md:order-1">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
+                            <div class="inline-block px-3 py-1 rounded-full bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 text-sm font-bold mb-4">Community</div>
+                            <h3 class="text-2xl font-bold mb-3" data-ar="المرحلة الثالثة: مجتمع وتخصيص" data-en="Phase 3: Community & Customization">المرحلة الثالثة: مجتمع وتخصيص</h3>
+                            <ul class="space-y-2 text-gray-600 dark:text-gray-400">
+                                <li><i class="fas fa-check-circle text-pink-500 mr-2"></i><span data-ar="إضافة قوالب من المستخدمين (بمراجعة فريقنا)" data-en="User-submitted templates (team reviewed)">إضافة قوالب من المستخدمين</span></li>
+                                <li><i class="fas fa-check-circle text-pink-500 mr-2"></i><span data-ar="سوق للقوالب والتصاميم الاحترافية" data-en="Marketplace for professional templates">سوق للقوالب الاحترافية</span></li>
+                                <li><i class="fas fa-check-circle text-pink-500 mr-2"></i><span data-ar="نظام مراجعة وتقييم للقوالب" data-en="Template review and rating system">نظام مراجعة وتقييم</span></li>
+                                <li><i class="fas fa-check-circle text-pink-500 mr-2"></i><span data-ar="شراكات مع شركات توظيف" data-en="Partnerships with hiring companies">شراكات مع شركات توظيف</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="md:w-12 flex justify-center order-1 md:order-2 mb-4 md:mb-0 z-10">
+                        <div class="w-12 h-12 rounded-full bg-pink-500 flex items-center justify-center text-white font-bold shadow-lg border-4 border-white dark:border-gray-800">3</div>
+                    </div>
+                    <div class="md:w-1/2 md:pl-12 order-3 hidden md:block"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Agile & Project Management Templates -->
+    <section id="agile" class="py-20 px-4 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4" data-ar="قوالب إدارة المشروع" data-en="Project Management Templates">قوالب إدارة المشروع</h2>
+                <p class="text-gray-600 dark:text-gray-400 text-lg" data-ar="انسخ هذه القوالب مباشرة إلى Notion أو أي أداة إدارة مشروع تستخدمها" data-en="Copy these templates directly to Notion or any project management tool you use">انسخ هذه القوالب مباشرة إلى Notion</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Product Backlog -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white">
+                        <h3 class="text-xl font-bold"><i class="fas fa-list-alt mr-2"></i>Product Backlog</h3>
+                    </div>
+                    <div class="p-6 overflow-x-auto">
+                        <table class="notion-table text-sm">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Story Points</th>
+                                    <th>Sprint</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>User Authentication (Email/Google)</td>
+                                    <td><span class="px-2 py-1 rounded bg-red-100 text-red-800 text-xs font-bold">P0</span></td>
+                                    <td>Backlog</td>
+                                    <td>8</td>
+                                    <td>Sprint 1</td>
+                                </tr>
+                                <tr>
+                                    <td>Repo-Info.md Parser & Storage</td>
+                                    <td><span class="px-2 py-1 rounded bg-red-100 text-red-800 text-xs font-bold">P0</span></td>
+                                    <td>Backlog</td>
+                                    <td>13</td>
+                                    <td>Sprint 1</td>
+                                </tr>
+                                <tr>
+                                    <td>AI CV Generation Engine</td>
+                                    <td><span class="px-2 py-1 rounded bg-red-100 text-red-800 text-xs font-bold">P0</span></td>
+                                    <td>Backlog</td>
+                                    <td>21</td>
+                                    <td>Sprint 2</td>
+                                </tr>
+                                <tr>
+                                    <td>ATS Compatibility Checker</td>
+                                    <td><span class="px-2 py-1 rounded bg-orange-100 text-orange-800 text-xs font-bold">P1</span></td>
+                                    <td>Backlog</td>
+                                    <td>8</td>
+                                    <td>Sprint 2</td>
+                                </tr>
+                                <tr>
+                                    <td>MD to DOCX Converter</td>
+                                    <td><span class="px-2 py-1 rounded bg-orange-100 text-orange-800 text-xs font-bold">P1</span></td>
+                                    <td>Backlog</td>
+                                    <td>5</td>
+                                    <td>Sprint 3</td>
+                                </tr>
+                                <tr>
+                                    <td>Dark/Light Mode</td>
+                                    <td><span class="px-2 py-1 rounded bg-yellow-100 text-yellow-800 text-xs font-bold">P2</span></td>
+                                    <td>Backlog</td>
+                                    <td>3</td>
+                                    <td>Sprint 3</td>
+                                </tr>
+                                <tr>
+                                    <td>Multi-language Support (AR/EN)</td>
+                                    <td><span class="px-2 py-1 rounded bg-orange-100 text-orange-800 text-xs font-bold">P1</span></td>
+                                    <td>Backlog</td>
+                                    <td>8</td>
+                                    <td>Sprint 3</td>
+                                </tr>
+                                <tr>
+                                    <td>Portfolio Builder (Phase 2)</td>
+                                    <td><span class="px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-bold">P3</span></td>
+                                    <td>Backlog</td>
+                                    <td>34</td>
+                                    <td>Sprint 5+</td>
+                                </tr>
+                                <tr>
+                                    <td>Community Templates (Phase 3)</td>
+                                    <td><span class="px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-bold">P3</span></td>
+                                    <td>Backlog</td>
+                                    <td>21</td>
+                                    <td>Sprint 8+</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Sprint Planning -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="bg-gradient-to-r from-purple-600 to-purple-700 p-6 text-white">
+                        <h3 class="text-xl font-bold"><i class="fas fa-running mr-2"></i>Sprint 1 Planning (2 Weeks)</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="mb-6">
+                            <h4 class="font-bold text-gray-800 dark:text-gray-200 mb-3">Sprint Goal</h4>
+                            <p class="text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">Launch MVP with core authentication and basic CV generation capability</p>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                                <div>
+                                    <div class="font-bold">User Auth System</div>
+                                    <div class="text-sm text-gray-500">8 Story Points | Backend Dev</div>
+                                </div>
+                                <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold">In Progress</span>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                                <div>
+                                    <div class="font-bold">Database Schema Design</div>
+                                    <div class="text-sm text-gray-500">5 Story Points | Database Admin</div>
+                                </div>
+                                <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs font-bold">To Do</span>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                                <div>
+                                    <div class="font-bold">Landing Page (This HTML)</div>
+                                    <div class="text-sm text-gray-500">5 Story Points | Frontend Dev</div>
+                                </div>
+                                <span class="px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-bold">Done</span>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                                <div>
+                                    <div class="font-bold">AI Integration Setup</div>
+                                    <div class="text-sm text-gray-500">13 Story Points | AI Engineer</div>
+                                </div>
+                                <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs font-bold">To Do</span>
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Total Capacity: <span class="font-bold text-gray-800 dark:text-gray-200">40 SP</span></span>
+                                <span class="text-gray-500">Committed: <span class="font-bold text-blue-600">31 SP</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Structure -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="bg-gradient-to-r from-pink-600 to-pink-700 p-6 text-white">
+                        <h3 class="text-xl font-bold"><i class="fas fa-users mr-2"></i>Team Structure (Internship-Based)</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-xl">
+                                <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold">Project Owner / Product Manager</div>
+                                    <div class="text-sm text-gray-500">You - Vision, Strategy, Backlog Management</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-xl">
+                                <div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                                    <i class="fas fa-code"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold">Frontend Developers (2-3)</div>
+                                    <div class="text-sm text-gray-500">React/Vue + Tailwind + Dark Mode + i18n</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-xl">
+                                <div class="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold">Backend Developers (2)</div>
+                                    <div class="text-sm text-gray-500">Node.js/Python + Database + Auth + API</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-xl">
+                                <div class="w-10 h-10 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-yellow-600 dark:text-yellow-400">
+                                    <i class="fas fa-brain"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold">AI/ML Engineers (1-2)</div>
+                                    <div class="text-sm text-gray-500">Prompt Engineering + LLM Integration + NLP</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-xl">
+                                <div class="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
+                                    <i class="fas fa-paint-brush"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold">UI/UX Designer (1)</div>
+                                    <div class="text-sm text-gray-500">Figma + User Research + Responsive Design</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Analysis -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="bg-gradient-to-r from-green-600 to-green-700 p-6 text-white">
+                        <h3 class="text-xl font-bold"><i class="fas fa-chart-line mr-2"></i>Financial Analysis (Bootstrapped)</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="font-bold text-gray-800 dark:text-gray-200 mb-3">Phase 1 Costs (MVP - 3 Months)</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                                        <span class="text-gray-600 dark:text-gray-400">Infrastructure (Vercel + Supabase)</span>
+                                        <span class="font-bold">$50/month</span>
+                                    </div>
+                                    <div class="flex justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                                        <span class="text-gray-600 dark:text-gray-400">AI API (OpenAI/Claude)</span>
+                                        <span class="font-bold">$100/month</span>
+                                    </div>
+                                    <div class="flex justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                                        <span class="text-gray-600 dark:text-gray-400">Domain + Email</span>
+                                        <span class="font-bold">$20/year</span>
+                                    </div>
+                                    <div class="flex justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                                        <span class="font-bold text-red-700 dark:text-red-400">Total Phase 1 (3 months)</span>
+                                        <span class="font-bold text-red-700 dark:text-red-400">~$500</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 dark:text-gray-200 mb-3">Revenue Model (Post-MVP)</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                                        <span class="text-gray-600 dark:text-gray-400">Free Tier</span>
+                                        <span class="font-bold text-green-600">2 CVs + Basic Template</span>
+                                    </div>
+                                    <div class="flex justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                                        <span class="text-gray-600 dark:text-gray-400">Pro Monthly</span>
+                                        <span class="font-bold">$9.99/month</span>
+                                    </div>
+                                    <div class="flex justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                                        <span class="text-gray-600 dark:text-gray-400">Pro Yearly</span>
+                                        <span class="font-bold">$79.99/year (33% off)</span>
+                                    </div>
+                                    <div class="flex justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                                        <span class="text-gray-600 dark:text-gray-400">Portfolio Builder Add-on</span>
+                                        <span class="font-bold">$4.99/month</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-200 dark:border-blue-800">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <i class="fas fa-lightbulb text-blue-600 dark:text-blue-400"></i>
+                                    <span class="font-bold text-blue-800 dark:text-blue-300">Break-even Target</span>
+                                </div>
+                                <p class="text-sm text-blue-700 dark:text-blue-400">100 paid users = ~$1000/month revenue. Covers costs + small team stipends.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SDLC Diagram -->
+            <div class="mt-12 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-8">
+                <h3 class="text-2xl font-bold mb-8 text-center" data-ar="دورة حياة تطوير البرمجيات (SDLC)" data-en="Software Development Life Cycle">دورة حياة تطوير البرمجيات (SDLC)</h3>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shadow-lg mb-3">
+                            <i class="fas fa-lightbulb text-2xl"></i>
+                        </div>
+                        <span class="font-bold text-sm">Planning</span>
+                        <span class="text-xs text-gray-500">Week 1-2</span>
+                    </div>
+                    <div class="flex items-center"><i class="fas fa-arrow-left text-gray-400 text-xl hidden md:block"></i></div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white shadow-lg mb-3">
+                            <i class="fas fa-search text-2xl"></i>
+                        </div>
+                        <span class="font-bold text-sm">Analysis</span>
+                        <span class="text-xs text-gray-500">Week 3-4</span>
+                    </div>
+                    <div class="flex items-center"><i class="fas fa-arrow-left text-gray-400 text-xl hidden md:block"></i></div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center text-white shadow-lg mb-3">
+                            <i class="fas fa-pencil-ruler text-2xl"></i>
+                        </div>
+                        <span class="font-bold text-sm">Design</span>
+                        <span class="text-xs text-gray-500">Week 5-6</span>
+                    </div>
+                    <div class="flex items-center"><i class="fas fa-arrow-left text-gray-400 text-xl hidden md:block"></i></div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white shadow-lg mb-3">
+                            <i class="fas fa-code text-2xl"></i>
+                        </div>
+                        <span class="font-bold text-sm">Development</span>
+                        <span class="text-xs text-gray-500">Week 7-14</span>
+                    </div>
+                    <div class="flex items-center"><i class="fas fa-arrow-left text-gray-400 text-xl hidden md:block"></i></div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white shadow-lg mb-3">
+                            <i class="fas fa-vial text-2xl"></i>
+                        </div>
+                        <span class="font-bold text-sm">Testing</span>
+                        <span class="text-xs text-gray-500">Week 15-16</span>
+                    </div>
+                    <div class="flex items-center"><i class="fas fa-arrow-left text-gray-400 text-xl hidden md:block"></i></div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white shadow-lg mb-3">
+                            <i class="fas fa-rocket text-2xl"></i>
+                        </div>
+                        <span class="font-bold text-sm">Deployment</span>
+                        <span class="text-xs text-gray-500">Week 17+</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Reference Card -->
+    <section class="py-20 px-4 bg-white dark:bg-gray-800/50">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-3xl p-1 shadow-2xl">
+                <div class="bg-white dark:bg-gray-900 rounded-3xl p-8 md:p-12">
+                    <h2 class="text-3xl font-bold text-center mb-8" data-ar="بطاقة مرجعية سريعة" data-en="Quick Reference Card">بطاقة مرجعية سريعة</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="font-bold text-xl mb-4 text-blue-600 dark:text-blue-400">
+                                <i class="fas fa-check-double mr-2"></i>
+                                <span data-ar="قبل الإرسال" data-en="Before Submitting">قبل الإرسال</span>
+                            </h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-3">
+                                    <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                    <span class="text-gray-700 dark:text-gray-300" data-ar="هل البullet يبدأ بفعل قوي؟" data-en="Does bullet start with strong action verb?">هل البbullet يبدأ بفعل قوي؟</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                    <span class="text-gray-700 dark:text-gray-300" data-ar="هل يحتوي على رقم أو نسبة مئوية؟" data-en="Does it contain a number or percentage?">هل يحتوي على رقم أو نسبة مئوية؟</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                    <span class="text-gray-700 dark:text-gray-300" data-ar="هل الكلمة المفتاحية في أول 3 كلمات؟" data-en="Is the keyword in the first 3 words?">هل الكلمة المفتاحية في أول 3 كلمات؟</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                    <span class="text-gray-700 dark:text-gray-300" data-ar="هل هو سطر واحد (أقل من 20 كلمة)؟" data-en="Is it one line (under 20 words)?">هل هو سطر واحد (أقل من 20 كلمة)؟</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                    <span class="text-gray-700 dark:text-gray-300" data-ar="هل اتبعت صيغة X-Y-Z؟" data-en="Did you follow X-Y-Z formula?">هل اتبعت صيغة X-Y-Z؟</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl mb-4 text-red-600 dark:text-red-400">
+                                <i class="fas fa-times-circle mr-2"></i>
+                                <span data-ar="ممنوعات" data-en="Never Do">ممنوعات</span>
+                            </h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-3">
+                                    <i class="fas fa-times-circle text-red-500 mt-1"></i>
+                                    <span class="text-gray-700 dark:text-gray-300">Hard worker, Passionate, Team player</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fas fa-times-circle text-red-500 mt-1"></i>
+                                    <span class="text-gray-700 dark:text-gray-300">Responsible for, Assisted, Handled</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fas fa-times-circle text-red-500 mt-1"></i>
+                                    <span class="text-gray-700 dark:text-gray-300">Photo, Age, Gender, Marital Status</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fas fa-times-circle text-red-500 mt-1"></i>
+                                    <span class="text-gray-700 dark:text-gray-300">References available upon request</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fas fa-times-circle text-red-500 mt-1"></i>
+                                    <span class="text-gray-700 dark:text-gray-300">More than 1 page (for fresh grads)</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">CV</div>
+                        <span class="font-bold text-xl">AI CV Builder</span>
+                    </div>
+                    <p class="text-gray-400 text-sm" data-ar="دليل مجتمعي مفتوح المصدر لإنشاء سير ذاتية احترافية بالذكاء الاصطناعي" data-en="Open-source community guide for creating professional resumes with AI">
+                        دليل مجتمعي مفتوح المصدر لإنشاء سير ذاتية احترافية
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4" data-ar="روابط سريعة" data-en="Quick Links">روابط سريعة</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#steps" class="hover:text-white transition-colors">Step-by-Step Guide</a></li>
+                        <li><a href="#converter" class="hover:text-white transition-colors">MD to DOCX Converter</a></li>
+                        <li><a href="#roadmap" class="hover:text-white transition-colors">Future Roadmap</a></li>
+                        <li><a href="#agile" class="hover:text-white transition-colors">Project Templates</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4" data-ar="المنصات المدعومة" data-en="Supported Platforms">المنصات المدعومة</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 rounded-lg bg-gray-800 text-xs">AntiGravity</span>
+                        <span class="px-3 py-1 rounded-lg bg-gray-800 text-xs">ChatGPT</span>
+                        <span class="px-3 py-1 rounded-lg bg-gray-800 text-xs">Claude</span>
+                        <span class="px-3 py-1 rounded-lg bg-gray-800 text-xs">FlowCV</span>
+                        <span class="px-3 py-1 rounded-lg bg-gray-800 text-xs">Huntr.co</span>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
+                <p data-ar="صنع بحب للمجتمع | 2026" data-en="Made with love for the community | 2026">صنع بحب للمجتمع | 2026</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+        }
+
+        // Language Toggle
+        let currentLang = 'ar';
+        function toggleLanguage() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.getElementById('langBtn').textContent = currentLang === 'ar' ? 'English' : 'العربية';
+
+            document.querySelectorAll('[data-ar][data-en]').forEach(el => {
+                el.textContent = el.getAttribute('data-' + currentLang);
+            });
+
+            localStorage.setItem('lang', currentLang);
+        }
+
+        // Initialize
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark');
+        }
+        if (localStorage.getItem('lang') === 'en') {
+            toggleLanguage();
+        }
+
+        // Scroll Indicator
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('scrollIndicator').style.width = scrolled + '%';
+        });
+
+        // Copy to Clipboard
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target.closest('button');
+                const original = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check mr-1"></i> تم!';
+                setTimeout(() => btn.innerHTML = original, 2000);
+            });
+        }
+
+        // File Handling
+        let currentMarkdown = '';
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentMarkdown = e.target.result;
+                document.getElementById('previewSection').classList.remove('hidden');
+                document.getElementById('previewContent').innerHTML = marked.parse(currentMarkdown);
+            };
+            reader.readAsText(file);
+        }
+
+        // Drag and Drop
+        const dropZone = document.getElementById('dropZone');
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+            const file = e.dataTransfer.files[0];
+            if (file && (file.name.endsWith('.md') || file.name.endsWith('.txt'))) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    currentMarkdown = evt.target.result;
+                    document.getElementById('previewSection').classList.remove('hidden');
+                    document.getElementById('previewContent').innerHTML = marked.parse(currentMarkdown);
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Convert to DOCX
+        async function convertToDocx() {
+            if (!currentMarkdown) return;
+
+            // Simple conversion using mammoth (basic HTML to DOCX)
+            const html = marked.parse(currentMarkdown);
+
+            // Create a simple DOCX-like structure
+            const blob = new Blob([
+                '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+' +
+                '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+' +
+                '<w:body>
+' +
+                html.split('
+').map(line => {
+                    return '<w:p><w:r><w:t>' + line.replace(/[<&]/g, c => c === '<' ? '&lt;' : '&amp;') + '</w:t></w:r></w:p>';
+                }).join('
+') +
+                '</w:body></w:document>'
+            ], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+
+            // For a real implementation, we'd use a proper DOCX generation library
+            // This is a simplified version - in production use docx.js or server-side conversion
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'cv.docx';
+            link.click();
+
+            // Show notification
+            const btn = event.target.closest('button');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check mr-2"></i> تم التحميل!';
+            setTimeout(() => btn.innerHTML = original, 3000);
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
