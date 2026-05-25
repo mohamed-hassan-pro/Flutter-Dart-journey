@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'views/home_view.dart';
 
 void main() {
-  NewsService(Dio()).getNews("general");
   runApp(const MainApp());
 }
 
