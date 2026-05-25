@@ -13,13 +13,14 @@ class NewsService {
     for (var article in articles) {
       articlesList.add(
         ArticleModel(
-          image: article['urlToImage']??'assets/general.avif',
-          title: article['title']??'No Title',
-          subTitle: article['description']??'No SubTitle',
+          image:
+              article['urlToImage'] ??
+              'https://i.ytimg.com/vi/pgg4ou4gf7M/maxresdefault.jpg',
+          title: article['title'] ?? 'No Title',
+          subTitle: article['description'] ?? 'No SubTitle',
         ),
       );
     }
     return articlesList;
   }
 }
-

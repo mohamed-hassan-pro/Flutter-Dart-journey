@@ -1,5 +1,3 @@
-import 'package:_05_news_app/services/news_service.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'views/home_view.dart';
 
