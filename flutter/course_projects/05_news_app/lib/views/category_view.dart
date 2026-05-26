@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../widgets/news_list_view_builder.dart';
 
 class CategoryView extends StatelessWidget {
-  const CategoryView({super.key});
+  const CategoryView({super.key, required this.category});
+  final String category;
 
   @override
   Widget build(BuildContext context) {
@@ -11,12 +12,12 @@ class CategoryView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Row(
+        title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('News', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text('News', style: TextStyle(fontWeight: FontWeight.bold)),
             Text(
-              'Cloud',
+              category,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.orange,
@@ -25,11 +26,11 @@ class CategoryView extends StatelessWidget {
           ],
         ),
       ),
-      body: const Padding(
+      body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16),
         child: CustomScrollView(
-          physics: BouncingScrollPhysics(),
-          slivers: [NewsListViewBuilder()],
+          physics: const BouncingScrollPhysics(),
+          slivers: [NewsListViewBuilder(category: category)],
         ),
       ),
     );

@@ -11,7 +11,9 @@ class CategoryCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const CategoryView()),
+        MaterialPageRoute(
+          builder: (context) => CategoryView(category: category.name),
+        ),
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -24,7 +26,7 @@ class CategoryCard extends StatelessWidget {
         width: 250,
         child: Center(
           child: Text(
-            category.category,
+            category.name,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 24,
