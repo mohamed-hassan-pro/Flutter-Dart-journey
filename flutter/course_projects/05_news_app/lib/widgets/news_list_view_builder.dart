@@ -32,6 +32,11 @@ class _NewsListViewBuilderState extends State<NewsListViewBuilder> {
             hasScrollBody: false,
             child: Center(child: CircularProgressIndicator()),
           )
-        : NewsListView(articles: articles);
+        : articles.isNotEmpty
+        ? NewsListView(articles: articles)
+        : SliverFillRemaining(
+            fillOverscroll: false,
+            child: Center(child: Text("Opps There was an error, try leter")),
+          );
   }
 }
