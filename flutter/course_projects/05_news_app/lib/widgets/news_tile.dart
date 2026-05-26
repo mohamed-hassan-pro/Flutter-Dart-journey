@@ -1,4 +1,5 @@
 import 'package:_05_news_app/models/article_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class NewsTile extends StatelessWidget {
@@ -16,7 +17,18 @@ class NewsTile extends StatelessWidget {
             fit: BoxFit.fill,
             height: 200,
             width: double.infinity,
+            errorBuilder: (context, error, stackTrace) =>
+                const Text('Image failed to load'),
           ),
+          // CachedNetworkImage(
+          //   imageUrl: article.image,
+          //   fit: BoxFit.fill,
+          //   height: 200,
+          //   width: double.infinity,
+          //   placeholder: (context, url) =>
+          //       Center(child: CircularProgressIndicator()),
+          //   errorWidget: (context, url, error) => Icon(Icons.error),
+          // ),
         ),
         SizedBox(height: 8),
         Text(
