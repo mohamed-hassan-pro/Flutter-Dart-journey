@@ -1,7 +1,7 @@
-import 'package:_05_news_app/models/article_model.dart';
-import 'package:_05_news_app/services/news_service.dart';
-import 'package:_05_news_app/widgets/news_list_view.dart';
 import 'package:flutter/material.dart';
+import '../models/article_model.dart';
+import '../services/news_service.dart';
+import 'news_list_view.dart';
 
 class NewsListViewBuilder extends StatefulWidget {
   const NewsListViewBuilder({super.key});
@@ -11,32 +11,32 @@ class NewsListViewBuilder extends StatefulWidget {
 }
 
 class _NewsListViewBuilderState extends State<NewsListViewBuilder> {
-  List<ArticleModel> articles = [];
-  bool isLoading = true;
+  var future;
   @override
   void initState() {
     super.initState();
-    getNews();
-  }
-
-  Future<void> getNews() async {
-    articles = await NewsService().getNews();
-    isLoading = false;
-    setState(() {});
+    future = NewsService().getNews();
   }
 
   @override
   Widget build(BuildContext context) {
-    return isLoading
-        ? SliverFillRemaining(
-            hasScrollBody: false,
-            child: Center(child: CircularProgressIndicator()),
-          )
-        : articles.isNotEmpty
-        ? NewsListView(articles: articles)
-        : SliverFillRemaining(
+    return FutureBuilder<List<ArticleModel>>(
+      future: future,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return NewsListView(articles: snapshot.data!);
+        } else if (snapshot.hasError) {
+          return SliverFillRemaining(
             fillOverscroll: false,
             child: Center(child: Text("Opps There was an error, try leter")),
           );
+        } else {
+          return SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+      },
+    );
   }
 }
