@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-
 import '../widgets/news_list_view_builder.dart';
 
+// 💡 هذه الشاشة (CategoryView) تُعرض عندما يضغط المستخدم على أي قسم.
 class CategoryView extends StatelessWidget {
-  const CategoryView({super.key, required this.category});
-  final String category;
+  // نستقبل اسم القسم (category) كـ Required Parameter من الشاشة السابقة.
+  // 💡 هذه الطريقة (Data Passing) تجعل هذه الشاشة قابلة لإعادة الاستخدام (Reusable) لأي قسم.
+  const CategoryView({super.key, required this.categoryName});
+  final String categoryName;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +19,7 @@ class CategoryView extends StatelessWidget {
           children: [
             const Text('News', style: TextStyle(fontWeight: FontWeight.bold)),
             Text(
-              category,
+              categoryName, // 💡 استخدمنا المتغير هنا ليكون العنوان ديناميكي يتغير حسب القسم
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.orange,
@@ -28,9 +30,13 @@ class CategoryView extends StatelessWidget {
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16),
+        // 💡 نستخدم CustomScrollView لدمج عدة أجزاء قابلة للتمرير (Slivers) معاً في شاشة واحدة.
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
-          slivers: [NewsListViewBuilder(category: category)],
+          slivers: [
+            // 💡 نُمرر اسم القسم هنا أيضاً للـ Builder لكي يجلبه من الـ API عبر الـ Service.
+            NewsListViewBuilder(categoryName: categoryName),
+          ],
         ),
       ),
     );

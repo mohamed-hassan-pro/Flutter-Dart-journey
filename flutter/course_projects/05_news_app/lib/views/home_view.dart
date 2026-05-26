@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/categories_list_view.dart';
 import '../widgets/news_list_view_builder.dart';
 
+// 💡 الشاشة الرئيسية للتطبيق، تحتوي على الأقسام العلوية والأخبار العامة.
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
@@ -27,12 +28,19 @@ class HomeView extends StatelessWidget {
       ),
       body: const Padding(
         padding: EdgeInsets.symmetric(horizontal: 16),
+        // 💡 استخدام CustomScrollView يعتبر من أفضل الممارسات عندما يكون لديك Scroll عمودي
+        // يحتوي بداخله على Scroll أفقي أو قوائم متعددة، فهو يدمجهم بـ Performance ممتاز.
         child: CustomScrollView(
           physics: BouncingScrollPhysics(),
           slivers: [
+            // 💡 SliverToBoxAdapter يستخدم لتحويل الـ Widgets العادية (مثل ListView العادي أو SizedBox)
+            // لكي يمكن وضعها داخل مصفوفة الـ slivers الخاصة بـ CustomScrollView.
             SliverToBoxAdapter(child: CategoriesListView()),
             SliverToBoxAdapter(child: SizedBox(height: 32)),
-            NewsListViewBuilder(category: 'general'),
+            // 💡 NewsListViewBuilder بطبيعته يُرجع Sliver (SliverList أو SliverFillRemaining)
+            // لذا نضعه مباشرة بدون SliverToBoxAdapter.
+            // ونمرر له 'general' كقسم افتراضي للشاشة الرئيسية.
+            NewsListViewBuilder(categoryName: 'general'),
           ],
         ),
       ),
