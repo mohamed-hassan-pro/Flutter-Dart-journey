@@ -9,7 +9,10 @@ class CategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => CategoryView(),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const CategoryView()),
+      ),
       child: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
